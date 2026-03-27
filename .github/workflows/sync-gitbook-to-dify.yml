@@ -5,20 +5,26 @@ on:
     branches: [main]
     paths:
       - '**.md'
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Enable long paths
+        run: git config --global core.longpaths true
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
       - name: Get changed markdown files
-        id: changed
         run: |
-          git diff --name-only HEAD~1 HEAD | grep '\.md$' > changed_files.txt
+          git diff --name-only HEAD~1 HEAD | grep '\.md$' > changed_files.txt || true
+          # workflow_dispatch時は全ファイルを対象にする
+          if [ ! -s changed_files.txt ]; then
+            find . -name '*.md' | sed 's|^\./||' > changed_files.txt
+          fi
           cat changed_files.txt
 
       - name: Upload or Update to Dify
@@ -27,8 +33,16 @@ jobs:
           DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
         run: |
           while IFS= read -r file; do
+            # ファイル名が長い場合はMD5ハッシュを使う
             FILENAME=$(basename "$file")
-            echo "Processing: $FILENAME"
+            BYTE_LEN=$(echo -n "$FILENAME" | wc -c)
+            if [ "$BYTE_LEN" -gt 200 ]; then
+              LOOKUP_NAME=$(echo -n "$FILENAME" | md5sum | cut -d' ' -f1).md
+            else
+              LOOKUP_NAME="$FILENAME"
+            fi
+
+            echo "Processing: $FILENAME → $LOOKUP_NAME"
 
             DOC_ID=$(curl -s "https://api.dify.ai/v1/datasets/${DIFY_DATASET_ID}/documents?limit=100" \
               -H "Authorization: Bearer ${DIFY_API_KEY}" | \
@@ -37,7 +51,7 @@ jobs:
           data = json.load(sys.stdin)
           docs = data.get('data', [])
           for d in docs:
-              if d.get('name') == '${FILENAME}':
+              if d.get('name') == '${LOOKUP_NAME}':
                   print(d['id'])
                   break
           ")
@@ -53,5 +67,4 @@ jobs:
                 -F "file=@${file};type=text/markdown" \
                 -F 'data={"indexing_technique":"high_quality","process_rule":{"mode":"automatic"}}'
             fi
-
           done < changed_files.txt
