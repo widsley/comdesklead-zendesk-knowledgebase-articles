@@ -18,7 +18,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          python3 << 'EOF'
+          python3 - << 'PYEOF'
           import os, json, requests, hashlib
 
           DIFY_API_KEY = os.environ["DIFY_API_KEY"]
@@ -29,7 +29,6 @@ jobs:
           gh_headers = {"Authorization": f"token {GH_TOKEN}"}
           dify_headers = {"Authorization": f"Bearer {DIFY_API_KEY}"}
 
-          # GitHubリポジトリの全mdファイルを再帰取得
           def get_all_md_files(path=""):
               url = f"https://api.github.com/repos/{REPO}/contents/{path}"
               res = requests.get(url, headers=gh_headers)
@@ -42,7 +41,6 @@ jobs:
                       files.append(item)
               return files
 
-          # Difyの既存ドキュメント一覧取得
           def get_dify_docs():
               res = requests.get(
                   f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/documents?limit=100",
@@ -50,7 +48,6 @@ jobs:
               )
               return {d["name"]: d["id"] for d in res.json().get("data", [])}
 
-          # ファイル名が長い場合はハッシュ化
           def safe_name(name):
               if len(name.encode("utf-8")) > 200:
                   return hashlib.md5(name.encode()).hexdigest() + ".md"
@@ -64,7 +61,6 @@ jobs:
               original_name = f["name"]
               lookup_name = safe_name(original_name)
 
-              # ファイル内容をGitHub APIで取得
               content_res = requests.get(f["download_url"], headers=gh_headers)
               content = content_res.content
 
@@ -72,7 +68,7 @@ jobs:
 
               files_payload = {"file": (lookup_name, content, "text/markdown")}
               data_payload = {"data": json.dumps({
-                  "indexing_technique": "high_quality",
+                  "indexing_technique": "economy",
                   "process_rule": {"mode": "automatic"}
               })}
 
@@ -94,4 +90,4 @@ jobs:
 
               print(f"  → Status: {res.status_code}, Response: {res.text[:100]}")
 
-          EOF
+          PYEOF
