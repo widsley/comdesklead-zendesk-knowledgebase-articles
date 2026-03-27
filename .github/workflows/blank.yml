@@ -7,21 +7,33 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Test Dify Auth
+      - name: Test POST to Dify
         env:
           DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
           DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
         run: |
           python3 - << 'PYEOF'
-          import os, requests
+          import os, requests, json
 
           key = os.environ["DIFY_API_KEY"]
           did = os.environ["DIFY_DATASET_ID"]
 
           headers = {"Authorization": f"Bearer {key}"}
-          print(f"Headerの内容: {headers}")
 
-          res = requests.get("https://api.dify.ai/v1/datasets", headers=headers)
+          # テスト用に小さなmdを直接POST
+          content = b"# Test\nThis is a test document."
+          files = {"file": ("test.md", content, "text/markdown")}
+          data = {"data": json.dumps({
+              "indexing_technique": "economy",
+              "process_rule": {"mode": "automatic"}
+          })}
+
+          res = requests.post(
+              f"https://api.dify.ai/v1/datasets/{did}/document/create-by-file",
+              headers=headers,
+              files=files,
+              data=data
+          )
           print(f"Status: {res.status_code}")
-          print(f"Response: {res.text[:200]}")
+          print(f"Response: {res.text[:300]}")
           PYEOF
