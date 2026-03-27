@@ -1,0 +1,57 @@
+name: Sync GitBook to Dify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get changed markdown files
+        id: changed
+        run: |
+          git diff --name-only HEAD~1 HEAD | grep '\.md$' > changed_files.txt
+          cat changed_files.txt
+
+      - name: Upload or Update to Dify
+        env:
+          DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
+          DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
+        run: |
+          while IFS= read -r file; do
+            FILENAME=$(basename "$file")
+            echo "Processing: $FILENAME"
+
+            DOC_ID=$(curl -s "https://api.dify.ai/v1/datasets/${DIFY_DATASET_ID}/documents?limit=100" \
+              -H "Authorization: Bearer ${DIFY_API_KEY}" | \
+              python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          docs = data.get('data', [])
+          for d in docs:
+              if d.get('name') == '${FILENAME}':
+                  print(d['id'])
+                  break
+          ")
+
+            if [ -n "$DOC_ID" ]; then
+              curl -X POST "https://api.dify.ai/v1/datasets/${DIFY_DATASET_ID}/documents/${DOC_ID}/update-by-file" \
+                -H "Authorization: Bearer ${DIFY_API_KEY}" \
+                -F "file=@${file};type=text/markdown" \
+                -F 'data={"indexing_technique":"high_quality","process_rule":{"mode":"automatic"}}'
+            else
+              curl -X POST "https://api.dify.ai/v1/datasets/${DIFY_DATASET_ID}/document/create-by-file" \
+                -H "Authorization: Bearer ${DIFY_API_KEY}" \
+                -F "file=@${file};type=text/markdown" \
+                -F 'data={"indexing_technique":"high_quality","process_rule":{"mode":"automatic"}}'
+            fi
+
+          done < changed_files.txt
