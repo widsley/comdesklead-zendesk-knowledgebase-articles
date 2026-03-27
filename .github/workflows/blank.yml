@@ -1,25 +1,4 @@
-name: Sync GitBook to Dify
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - '**.md'
-  workflow_dispatch:
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Debug secrets
-        env:
-          DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
-          DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
-        run: |
-          echo "API KEY先頭10文字: ${DIFY_API_KEY:0:10}"
-          echo "DATASET ID: ${DIFY_DATASET_ID}"
-
-      - name: Sync via GitHub API
+- name: Sync via GitHub API
         env:
           DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
           DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
@@ -31,71 +10,8 @@ jobs:
 
           DIFY_API_KEY = os.environ["DIFY_API_KEY"]
           DIFY_DATASET_ID = os.environ["DIFY_DATASET_ID"]
-          GH_TOKEN = os.environ["GH_TOKEN"]
-          REPO = os.environ["REPO"]
 
-          gh_headers = {"Authorization": f"token {GH_TOKEN}"}
-          dify_headers = {"Authorization": f"Bearer {DIFY_API_KEY}"}
-
-          def get_all_md_files(path=""):
-              url = f"https://api.github.com/repos/{REPO}/contents/{path}"
-              res = requests.get(url, headers=gh_headers)
-              items = res.json()
-              files = []
-              for item in items:
-                  if item["type"] == "dir":
-                      files.extend(get_all_md_files(item["path"]))
-                  elif item["name"].endswith(".md"):
-                      files.append(item)
-              return files
-
-          def get_dify_docs():
-              res = requests.get(
-                  f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/documents?limit=100",
-                  headers=dify_headers
-              )
-              return {d["name"]: d["id"] for d in res.json().get("data", [])}
-
-          def safe_name(name):
-              if len(name.encode("utf-8")) > 200:
-                  return hashlib.md5(name.encode()).hexdigest() + ".md"
-              return name
-
-          md_files = get_all_md_files()
-          dify_docs = get_dify_docs()
-          print(f"Found {len(md_files)} markdown files")
-
-          for f in md_files:
-              original_name = f["name"]
-              lookup_name = safe_name(original_name)
-
-              content_res = requests.get(f["download_url"], headers=gh_headers)
-              content = content_res.content
-
-              print(f"Processing: {original_name} → {lookup_name}")
-
-              files_payload = {"file": (lookup_name, content, "text/markdown")}
-              data_payload = {"data": json.dumps({
-                  "indexing_technique": "high_quality",
-                  "process_rule": {"mode": "automatic"}
-              })}
-
-              if lookup_name in dify_docs:
-                  doc_id = dify_docs[lookup_name]
-                  res = requests.post(
-                      f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/documents/{doc_id}/update-by-file",
-                      headers=dify_headers,
-                      files=files_payload,
-                      data=data_payload
-                  )
-              else:
-                  res = requests.post(
-                      f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/document/create-by-file",
-                      headers=dify_headers,
-                      files=files_payload,
-                      data=data_payload
-                  )
-
-              print(f"  → Status: {res.status_code}, Response: {res.text[:100]}")
-
-          EOF
+          # デバッグ：キーの長さと末尾の文字コードを確認
+          print(f"API KEY長さ: {len(DIFY_API_KEY)}")
+          print(f"API KEYバイト列: {DIFY_API_KEY.encode()[:15]}")
+          print(f"DATASET ID長さ: {len(DIFY_DATASET_ID)}")
