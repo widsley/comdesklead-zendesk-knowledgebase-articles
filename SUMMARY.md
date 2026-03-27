@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Knowledge Base](README.md)
+* [Comdeskご利用ガイド](README.md)
 * [はじめてガイド](hajimetegaido/README.md)
   * [ユーザーガイド](hajimetegaido/yzgaido/README.md)
     * [Comdesk Leadにログインする](はじめてガイド/ユーザーガイド/12735918031513_Comdesk_Leadにログインする.md)
