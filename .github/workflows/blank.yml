@@ -1,0 +1,7 @@
+- name: Debug secrets
+        env:
+          DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
+          DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
+        run: |
+          echo "API KEY先頭10文字: ${DIFY_API_KEY:0:10}"
+          echo "DATASET ID: ${DIFY_DATASET_ID}"
