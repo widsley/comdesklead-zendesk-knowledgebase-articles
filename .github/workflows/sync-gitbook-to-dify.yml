@@ -10,6 +10,7 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - name: Sync via GitHub API
         env:
@@ -53,9 +54,27 @@ jobs:
                   return hashlib.md5(name.encode()).hexdigest() + ".md"
               return name
 
+          def upload_with_retry(url, headers, files_payload, data_payload, max_retries=5):
+              wait = 10
+              for attempt in range(max_retries):
+                  res = requests.post(url, headers=headers, files=files_payload, data=data_payload)
+                  if res.status_code == 200:
+                      return res
+                  elif res.status_code == 403:
+                      print(f"  Rate limit. Waiting {wait}s... (attempt {attempt+1}/{max_retries})")
+                      time.sleep(wait)
+                      wait = min(wait * 2, 60)  # 10→20→40→60秒
+                  else:
+                      print(f"  Error {res.status_code}: {res.text[:100]}")
+                      return res
+              return res
+
           md_files = get_all_md_files()
           dify_docs = get_dify_docs()
           print(f"Found {len(md_files)} markdown files")
+
+          success = 0
+          failed = 0
 
           for i, f in enumerate(md_files):
               original_name = f["name"]
@@ -64,7 +83,7 @@ jobs:
               content_res = requests.get(f["download_url"], headers=gh_headers)
               content = content_res.content
 
-              print(f"[{i+1}/{len(md_files)}] Processing: {original_name}")
+              print(f"[{i+1}/{len(md_files)}] {original_name}")
 
               files_payload = {"file": (lookup_name, content, "text/markdown")}
               data_payload = {"data": json.dumps({
@@ -74,28 +93,19 @@ jobs:
 
               if lookup_name in dify_docs:
                   doc_id = dify_docs[lookup_name]
-                  res = requests.post(
-                      f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/documents/{doc_id}/update-by-file",
-                      headers=dify_headers,
-                      files=files_payload,
-                      data=data_payload
-                  )
+                  endpoint = f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/documents/{doc_id}/update-by-file"
               else:
-                  res = requests.post(
-                      f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/document/create-by-file",
-                      headers=dify_headers,
-                      files=files_payload,
-                      data=data_payload
-                  )
+                  endpoint = f"https://api.dify.ai/v1/datasets/{DIFY_DATASET_ID}/document/create-by-file"
 
-              print(f"  → Status: {res.status_code}")
+              res = upload_with_retry(endpoint, dify_headers, files_payload, data_payload)
 
-              # 403が返ってきたら長めに待つ
-              if res.status_code == 403:
-                  print("  Rate limit hit. Waiting 60 seconds...")
-                  time.sleep(60)
+              if res.status_code == 200:
+                  success += 1
               else:
-                  # 通常は1秒待機
-                  time.sleep(1)
+                  failed += 1
+                  print(f"  Failed: {res.text[:100]}")
 
+              time.sleep(2)  # 通常待機2秒
+
+          print(f"\n完了: 成功={success}, 失敗={failed}")
           PYEOF
