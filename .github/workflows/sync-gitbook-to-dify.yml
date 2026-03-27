@@ -19,7 +19,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           python3 - << 'PYEOF'
-          import os, json, requests, hashlib
+          import os, json, requests, hashlib, time
 
           DIFY_API_KEY = os.environ["DIFY_API_KEY"]
           DIFY_DATASET_ID = os.environ["DIFY_DATASET_ID"]
@@ -57,14 +57,14 @@ jobs:
           dify_docs = get_dify_docs()
           print(f"Found {len(md_files)} markdown files")
 
-          for f in md_files:
+          for i, f in enumerate(md_files):
               original_name = f["name"]
               lookup_name = safe_name(original_name)
 
               content_res = requests.get(f["download_url"], headers=gh_headers)
               content = content_res.content
 
-              print(f"Processing: {original_name} → {lookup_name}")
+              print(f"[{i+1}/{len(md_files)}] Processing: {original_name}")
 
               files_payload = {"file": (lookup_name, content, "text/markdown")}
               data_payload = {"data": json.dumps({
@@ -88,6 +88,14 @@ jobs:
                       data=data_payload
                   )
 
-              print(f"  → Status: {res.status_code}, Response: {res.text[:100]}")
+              print(f"  → Status: {res.status_code}")
+
+              # 403が返ってきたら長めに待つ
+              if res.status_code == 403:
+                  print("  Rate limit hit. Waiting 60 seconds...")
+                  time.sleep(60)
+              else:
+                  # 通常は1秒待機
+                  time.sleep(1)
 
           PYEOF
