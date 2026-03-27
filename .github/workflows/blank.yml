@@ -7,17 +7,21 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug API Key
+      - name: Test Dify Auth
         env:
           DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
           DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
         run: |
           python3 - << 'PYEOF'
-          import os
+          import os, requests
+
           key = os.environ["DIFY_API_KEY"]
           did = os.environ["DIFY_DATASET_ID"]
-          print(f"KEY length: {len(key)}")
-          print(f"KEY bytes: {key.encode()[:20]}")
-          print(f"DID length: {len(did)}")
-          print(f"DID bytes: {did.encode()[:40]}")
+
+          headers = {"Authorization": f"Bearer {key}"}
+          print(f"Headerの内容: {headers}")
+
+          res = requests.get("https://api.dify.ai/v1/datasets", headers=headers)
+          print(f"Status: {res.status_code}")
+          print(f"Response: {res.text[:200]}")
           PYEOF
