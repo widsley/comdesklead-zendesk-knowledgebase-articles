@@ -1,17 +1,23 @@
-- name: Sync via GitHub API
+name: Sync GitBook to Dify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug API Key
         env:
           DIFY_API_KEY: ${{ secrets.DIFY_API_KEY }}
           DIFY_DATASET_ID: ${{ secrets.DIFY_DATASET_ID }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
         run: |
-          python3 << 'EOF'
-          import os, json, requests, hashlib
-
-          DIFY_API_KEY = os.environ["DIFY_API_KEY"]
-          DIFY_DATASET_ID = os.environ["DIFY_DATASET_ID"]
-
-          # デバッグ：キーの長さと末尾の文字コードを確認
-          print(f"API KEY長さ: {len(DIFY_API_KEY)}")
-          print(f"API KEYバイト列: {DIFY_API_KEY.encode()[:15]}")
-          print(f"DATASET ID長さ: {len(DIFY_DATASET_ID)}")
+          python3 - << 'PYEOF'
+          import os
+          key = os.environ["DIFY_API_KEY"]
+          did = os.environ["DIFY_DATASET_ID"]
+          print(f"KEY length: {len(key)}")
+          print(f"KEY bytes: {key.encode()[:20]}")
+          print(f"DID length: {len(did)}")
+          print(f"DID bytes: {did.encode()[:40]}")
+          PYEOF
