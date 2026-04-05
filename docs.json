@@ -6,7 +6,7 @@
   "colors": {
     "primary": "#00BCD4"
   },
-/  "customJs": "/dify.js",  
+//  "customJs": "/dify.js",  
   "navigation": {
     "groups": [
       {
