@@ -6,6 +6,11 @@
   "colors": {
     "primary": "#00BCD4"
   },
+"logo": {
+  "light": "/logo.png",
+  "dark": "/logo.png"
+},  
+   "favicon": "/favicon.ico",
   "navigation": {
     "groups": [
       {
