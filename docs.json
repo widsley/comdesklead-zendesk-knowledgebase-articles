@@ -9,6 +9,12 @@
   "navigation": {
     "groups": [
       {
+        "group": "ホーム",
+        "pages": [
+          "index"
+        ]
+      },
+      {
         "group": "はじめてガイド",
         "pages": [
           {
