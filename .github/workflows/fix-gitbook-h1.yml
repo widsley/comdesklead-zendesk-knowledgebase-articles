@@ -1,0 +1,81 @@
+name: Fix GitBook H1 Duplicates
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  fix-h1:
+    runs-on: ubuntu-latest
+    # GitBookのコミットのみ実行（無限ループ防止）
+    if: |
+      contains(github.event.head_commit.message, 'GITBOOK-') &&
+      !contains(github.event.head_commit.message, 'auto: remove duplicate H1')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove duplicate H1 headings
+        run: |
+          python3 - << 'PYEOF'
+          import os
+          import re
+
+          def fix_file(content):
+              """フロントマターにtitle:がある場合、直後のH1見出しを削除する"""
+              if not content.startswith('---'):
+                  return content, False
+              end = content.find('\n---', 3)
+              if end == -1:
+                  return content, False
+              frontmatter = content[:end + 4]
+              body = content[end + 4:]
+              if not re.search(r'^title:', frontmatter, re.MULTILINE):
+                  return content, False
+              # フロントマター直後の空行+H1を削除
+              body_fixed = re.sub(r'^\n*# .+\n?', '\n', body, count=1)
+              if body_fixed == body:
+                  return content, False
+              return frontmatter + body_fixed, True
+
+          count = 0
+          for root, dirs, files in os.walk('.'):
+              dirs[:] = [d for d in dirs if d not in ['.git', 'node_modules', '.gitbook']]
+              for fname in files:
+                  if not fname.endswith('.md'):
+                      continue
+                  path = os.path.join(root, fname)
+                  try:
+                      with open(path, 'r', encoding='utf-8') as f:
+                          content = f.read()
+                      fixed, changed = fix_file(content)
+                      if changed:
+                          with open(path, 'w', encoding='utf-8') as f:
+                              f.write(fixed)
+                          count += 1
+                          print(f'Fixed: {path}')
+                  except Exception as e:
+                      print(f'Error {path}: {e}')
+
+          print(f'Total: {count} files fixed')
+          PYEOF
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "auto: remove duplicate H1 from GitBook sync"
+          git push
