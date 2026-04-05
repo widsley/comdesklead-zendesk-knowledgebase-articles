@@ -1,50 +1,37 @@
-# Knowledge Base
+# Comdesk ヘルプ
 
-<details>
+Comdesk Lead の使い方、機能、トラブルシューティングに関するすべての情報をご覧いただけます。
 
-<summary><a data-mention href="rirsuntoorase/">rirsuntoorase</a></summary>
+## カテゴリ
 
+{% content-ref url="guide/README.md" %}
+[はじめてガイド](guide/README.md)
+{% endcontent-ref %}
 
+{% content-ref url="features/README.md" %}
+[機能一覧](features/README.md)
+{% endcontent-ref %}
 
-</details>
+{% content-ref url="troubleshoot/README.md" %}
+[トラブルシューティング](troubleshoot/README.md)
+{% endcontent-ref %}
 
-<details>
+{% content-ref url="hardware/README.md" %}
+[ハードウェアについて](hardware/README.md)
+{% endcontent-ref %}
 
-<summary><a data-mention href="hajimetegaido/">hajimetegaido</a></summary>
+{% content-ref url="release/README.md" %}
+[リリースノート・お知らせ](release/README.md)
+{% endcontent-ref %}
 
+{% content-ref url="plan/README.md" %}
+[製品・プランについて](plan/README.md)
+{% endcontent-ref %}
 
+## サポートにお問い合わせ
 
-</details>
+解決できない問題がありましたら、サポートチームまでお気軽にお問い合わせください。
 
-<details>
-
-<summary><a data-mention href="ji-neng-yi-lan/">ji-neng-yi-lan</a></summary>
-
-
-
-</details>
-
-<details>
-
-<summary><a data-mention href="hdoweanitsuite/">hdoweanitsuite</a></summary>
-
-
-
-</details>
-
-<details>
-
-<summary><a data-mention href="toraburushtingu/">toraburushtingu</a></summary>
-
-
-
-</details>
-
-<details>
-
-<summary><a data-mention href="purannitsuite/">purannitsuite</a></summary>
-
-
-
-</details>
-
+{% content-ref url="troubleshoot/support/12828937533081.md" %}
+[サポートチームへのお問い合わせ](troubleshoot/support/12828937533081.md)
+{% endcontent-ref %}
