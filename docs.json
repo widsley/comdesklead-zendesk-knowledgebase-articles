@@ -1,0 +1,16 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Comdesk ヘルプ",
+  "locale": "ja",
+  "colors": {
+    "primary": "#00BCD4"
+  },
+  "navigation": [
+    {
+      "group": "はじめてガイド",
+      "pages": [
+        "hajimetegaido/README"
+      ]
+    }
+  ]
+}
