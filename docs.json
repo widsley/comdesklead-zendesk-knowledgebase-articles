@@ -6,12 +6,14 @@
   "colors": {
     "primary": "#00BCD4"
   },
-  "navigation": [
-    {
-      "group": "はじめてガイド",
-      "pages": [
-        "hajimetegaido/README"
-      ]
-    }
-  ]
+  "navigation": {
+    "groups": [
+      {
+        "group": "はじめてガイド",
+        "pages": [
+          "hajimetegaido/README"
+        ]
+      }
+    ]
+  }
 }
