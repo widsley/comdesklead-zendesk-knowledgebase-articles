@@ -1,3 +1,4 @@
+/*
 window.difyChatbotConfig = {
   token: 'Fih8ltzxZ1A67IG6',
   inputs: {},
@@ -21,3 +22,4 @@ window.difyChatbotConfig = {
   ].join(' ');
   document.head.appendChild(style);
 })();
+*/
