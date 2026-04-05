@@ -11,76 +11,61 @@
       {
         "group": "はじめてガイド",
         "pages": [
-          "hajimetegaido/README",
           {
-            "group": "ガイド",
-            "pages": ["hajimetegaido/gaido/README"]
+            "group": "ユーザーガイド",
+            "pages": [
+              "はじめてガイド/ユーザーガイド/12735918031513_Comdesk_Leadにログインする"
+            ]
           },
           {
             "group": "推奨環境ガイド",
-            "pages": ["hajimetegaido/yzgaido/README"]
+            "pages": [
+              "はじめてガイド/推奨環境ガイド/13177022553241_サイトの推奨環境について"
+            ]
           }
         ]
       },
       {
         "group": "機能一覧",
         "pages": [
-          "ji-neng-yi-lan/README",
           {
             "group": "基本ガイド",
-            "pages": ["ji-neng-yi-lan/gaido/README"]
+            "pages": [
+              "機能一覧/基本ガイド/12736267394201_活動履歴の確認"
+            ]
           }
         ]
       },
       {
         "group": "トラブルシューティング",
         "pages": [
-          "toraburushtingu/README",
           {
             "group": "エラー",
-            "pages": ["toraburushtingu/er/README"]
-          },
-          {
-            "group": "サポートへのお問い合わせ",
-            "pages": ["toraburushtingu/saptochmuhenooiwase/README"]
+            "pages": [
+              "トラブルシューティング/エラー/12745831665177_「梶電に失敗しました」というエラーメッセージが表示された（携帯回線ご利用の場合）"
+            ]
           }
         ]
       },
       {
         "group": "ハードウェアについて",
         "pages": [
-          "hdoweanitsuite/README",
           {
-            "group": "ご依頼について",
-            "pages": ["hdoweanitsuite/nisurugo/README"]
-          },
-          {
-            "group": "端末について",
-            "pages": ["hdoweanitsuite/nitsuite/README"]
-          }
-        ]
-      },
-      {
-        "group": "リリースノート・お知らせ",
-        "pages": [
-          "rirsuntoorase/README",
-          {
-            "group": "Comdesk Lead リリースノート",
-            "pages": ["rirsuntoorase/comdesk_lead_release_notes/README"]
-          },
-          {
-            "group": "Widsley News",
-            "pages": ["rirsuntoorase/widsley_news/README"]
+            "group": "弊社貸出端末について",
+            "pages": [
+              "ハードウェアについて/弊社貸出端末について/12736165699481_IMEIの確認方法"
+            ]
           }
         ]
       },
       {
         "group": "製品・プランについて",
         "pages": [
-          "purannitsuite/README",
           {
             "group": "ご契約について",
-            "pages": ["purannitsuite/comdeskleadnogonitsuite/README"]
+            "pages": [
+              "製品・プランについて/Comdesk_Leadのご契約について/12736204042265_キャリア録音番号とユーザーの紐付けを変更したい"
+            ]
           }
         ]
       }
