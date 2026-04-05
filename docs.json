@@ -11,7 +11,77 @@
       {
         "group": "はじめてガイド",
         "pages": [
-          "hajimetegaido/README"
+          "hajimetegaido/README",
+          {
+            "group": "ガイド",
+            "pages": ["hajimetegaido/gaido/README"]
+          },
+          {
+            "group": "推奨環境ガイド",
+            "pages": ["hajimetegaido/yzgaido/README"]
+          }
+        ]
+      },
+      {
+        "group": "機能一覧",
+        "pages": [
+          "ji-neng-yi-lan/README",
+          {
+            "group": "基本ガイド",
+            "pages": ["ji-neng-yi-lan/gaido/README"]
+          }
+        ]
+      },
+      {
+        "group": "トラブルシューティング",
+        "pages": [
+          "toraburushtingu/README",
+          {
+            "group": "エラー",
+            "pages": ["toraburushtingu/er/README"]
+          },
+          {
+            "group": "サポートへのお問い合わせ",
+            "pages": ["toraburushtingu/saptochmuhenooiwase/README"]
+          }
+        ]
+      },
+      {
+        "group": "ハードウェアについて",
+        "pages": [
+          "hdoweanitsuite/README",
+          {
+            "group": "ご依頼について",
+            "pages": ["hdoweanitsuite/nisurugo/README"]
+          },
+          {
+            "group": "端末について",
+            "pages": ["hdoweanitsuite/nitsuite/README"]
+          }
+        ]
+      },
+      {
+        "group": "リリースノート・お知らせ",
+        "pages": [
+          "rirsuntoorase/README",
+          {
+            "group": "Comdesk Lead リリースノート",
+            "pages": ["rirsuntoorase/comdesk_lead_release_notes/README"]
+          },
+          {
+            "group": "Widsley News",
+            "pages": ["rirsuntoorase/widsley_news/README"]
+          }
+        ]
+      },
+      {
+        "group": "製品・プランについて",
+        "pages": [
+          "purannitsuite/README",
+          {
+            "group": "ご契約について",
+            "pages": ["purannitsuite/comdeskleadnogonitsuite/README"]
+          }
         ]
       }
     ]
