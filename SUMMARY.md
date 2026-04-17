@@ -196,7 +196,7 @@
     * [はじめてのサポートチームへのお問い合わせ方法](troubleshoot/support/12927370479257.md)
     * [ヘルプセンターログイン時のパスワードを忘れてしまった](troubleshoot/support/12941407647001.md)
     * [カスタマーサポートの対応時間](troubleshoot/support/14909482856473.md)
-    * [サポートチームへのお問い合わせ方法](troubleshoot/support/12828937533081-1.md)
+    * [サポートへのお問い合わせ方法](troubleshoot/support/12828937533081-1.md)
 * [ハードウェアについて](hardware/README.md)
   * [貸出端末について](hardware/device/README.md)
     * [IMEIの確認方法](hardware/device/12781943797273.md)
