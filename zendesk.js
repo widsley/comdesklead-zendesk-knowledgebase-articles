@@ -1,5 +1,4 @@
 // Zendesk Contact Form Modal - Comdesk Help
-// フロントからZendesk APIでチケット作成（認証不要）
 (function () {
   // 1. スタイル
   var style = document.createElement('style');
@@ -8,7 +7,7 @@
     '#zd-btn:hover{background:#00a5bb;transform:translateY(-2px)}',
     '#zd-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(2px)}',
     '#zd-overlay.open{display:flex}',
-    '#zd-modal{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:system-ui,sans-serif;position:relative;margin:16px}',
+    '#zd-modal{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);font-family:system-ui,sans-serif;position:relative;margin:16px}',
     '#zd-modal h2{margin:0 0 6px;font-size:20px;font-weight:700;color:#111}',
     '#zd-modal>p{margin:0 0 24px;font-size:14px;color:#666}',
     '#zd-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:#999;font-size:20px;line-height:1;padding:4px 8px;border-radius:6px}',
@@ -32,9 +31,7 @@
   // 2. DOM構築
   var html = [
     '<button id="zd-btn">',
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
-        '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-      '</svg>',
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
       'お問い合わせ',
     '</button>',
     '<div id="zd-overlay">',
@@ -46,25 +43,15 @@
           '<form id="zd-form" novalidate>',
             '<div class="zd-row"><label>お名前 <span style="color:#e53">※</span></label><input id="zd-name" type="text" placeholder="山田 太郎" required></div>',
             '<div class="zd-row"><label>メールアドレス <span style="color:#e53">※</span></label><input id="zd-email" type="email" placeholder="taro@example.com" required></div>',
-            '<div class="zd-row"><label>お問い合わせの種類</label>',
-              '<select id="zd-cat">',
-                '<option value="">選択してください</option>',
-                '<option>機能について</option>',
-                '<option>料金・プランについて</option>',
-                '<option>導入・初期設定について</option>',
-                '<option>バグ・不具合の報告</option>',
-                '<option>その他</option>',
-              '</select>',
-            '</div>',
+            '<div class="zd-row"><label>テナント名（会社名） <span style="color:#e53">※</span></label><input id="zd-tenant" type="text" placeholder="株式会社○○" required></div>',
+            '<div class="zd-row"><label>件名 <span style="color:#e53">※</span></label><input id="zd-subject" type="text" placeholder="お問い合わせの件名をご記入ください" required></div>',
             '<div class="zd-row"><label>内容 <span style="color:#e53">※</span></label><textarea id="zd-body" placeholder="お問い合わせ内容をご記入ください" required></textarea></div>',
             '<div id="zd-error"></div>',
             '<button type="submit" id="zd-submit">送信する</button>',
           '</form>',
         '</div>',
         '<div id="zd-sent">',
-          '<div class="zd-check">',
-            '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00BCD4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-          '</div>',
+          '<div class="zd-check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00BCD4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>',
           '<h3>送信が完了しました！</h3>',
           '<p>内容を確認し、担当者からご連絡いたします。<br>しばらくお待ちください。</p>',
         '</div>',
@@ -86,7 +73,6 @@
     var form     = document.getElementById('zd-form');
     var errEl    = document.getElementById('zd-error');
 
-    // 開ける
     document.getElementById('zd-btn').addEventListener('click', function () {
       formWrap.style.display = '';
       sent.style.display = 'none';
@@ -94,22 +80,20 @@
       errEl.style.display = 'none';
       overlay.classList.add('open');
     });
-
-    // 閉じる
     document.getElementById('zd-close').addEventListener('click', function () { overlay.classList.remove('open'); });
     overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.remove('open'); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') overlay.classList.remove('open'); });
 
-    // 送信
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var name  = document.getElementById('zd-name').value.trim();
-      var email = document.getElementById('zd-email').value.trim();
-      var cat   = document.getElementById('zd-cat').value;
-      var body  = document.getElementById('zd-body').value.trim();
+      var name    = document.getElementById('zd-name').value.trim();
+      var email   = document.getElementById('zd-email').value.trim();
+      var tenant  = document.getElementById('zd-tenant').value.trim();
+      var subject = document.getElementById('zd-subject').value.trim();
+      var body    = document.getElementById('zd-body').value.trim();
 
-      if (!name || !email || !body) {
-        errEl.textContent = 'お名前、メールアドレス、内容は必須項目です。';
+      if (!name || !email || !tenant || !subject || !body) {
+        errEl.textContent = 'すべての必須項目を入力してください。';
         errEl.style.display = 'block';
         return;
       }
@@ -119,23 +103,27 @@
       submitBtn.textContent = '送信中…';
       errEl.style.display = 'none';
 
-      var subject = cat ? ('[' + cat + '] お問い合わせ') : 'お問い合わせ';
-      var msgBody = '【お名前】' + name + '\n【メール】' + email + '\n\n' + body;
-
-      // Zendesk /api/v2/requests → 認証不要のパブリックエンドポイント
       fetch('https://comdesklead.zendesk.com/api/v2/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           request: {
+            ticket_form_id: 900000059466,
             subject: subject,
-            comment: { body: msgBody },
+            comment: { body: body },
             requester: { name: name, email: email },
+            custom_fields: [
+              { id: 900011874466, value: name },
+              { id: 900012751123, value: tenant },
+              { id: 14843259561625, value: 'question' },
+              { id: 14843373880729, value: 'add' },
+              { id: 14843482847897, value: 'situation_check' },
+            ]
           }
         })
       })
       .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) return res.text().then(function(t){ throw new Error(t); });
         return res.json();
       })
       .then(function () {
@@ -144,7 +132,7 @@
         submitBtn.disabled = false;
         submitBtn.textContent = '送信する';
       })
-      .catch(function (err) {
+      .catch(function () {
         errEl.textContent = '送信に失敗しました。しばらくしてから再度お試しください。';
         errEl.style.display = 'block';
         submitBtn.disabled = false;
@@ -153,7 +141,6 @@
     });
   }
 
-  // SPA対応
   if (document.body) addUI();
   setTimeout(addUI, 100);
   setTimeout(addUI, 600);
